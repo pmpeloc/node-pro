@@ -1,0 +1,47 @@
+# Curso Node PRO - Prof: Sergio Hidalgo
+
+## Clase 1:
+
+- Presentación del curso
+- Creación Branch: diagrams
+- Presentación del Proyecto:
+  - Sistema de Ambulancias:
+    - Usuarios (Módulo específico)
+    - Pilotos
+    - Médicos
+    - Historias
+  - Autenticación (Servicio específico)
+  - Compartido (Módulo usado en común)
+- Testing:
+  - Jest (herramienta para front y back)
+  - Supertest (para back simulador de objetos)
+- Deploy:
+  - CodePipeline:
+    - CodeCommit
+    - CodeBuild
+    - CodeDeploy:
+      - Elastic Beanstalk
+- Otras opciones de Deploy:
+  - AWS: Fargate (se apaga) y EC2 (no se apaga)
+  - Beanstalk (similar al Fargate pero más barato)
+- Contenedores:
+  - Docker
+  - Podman
+- Arquitecturas Limpias:
+  - CAPAS
+  - CEBOLLA
+  - HEXAGONAL
+- Principios SOLID:
+  - Responsabilidad Única
+  - Open (Expandir) / Close (Static)
+  - Sustitución
+  - Segregación de Interfaces
+  - Inversión de Dependencias
+- Arquitectura Exagonal: arquitectura de puertos y adaptadores
+  - Basada en puertos
+  - Permite que nuestra app se conecte a servicios externos
+  - Expone una API REST
+  - API GRAPHQL
+  - Pasarela de Pagos
+  - Doble Factor de Aplicación
+  - Puedo agregar tantos servicios como lo requiera
