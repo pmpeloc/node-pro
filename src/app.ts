@@ -1,19 +1,29 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Application } from 'express';
 
-import { exceptionNotFound, getRoute, IRoute } from './routes';
+import routerUser from './modules/user/interfaces/router';
+import HandlerErrors from './helpers/errors';
+import HandlerHealth from './helpers/health';
 
 class App {
   readonly expressApp: Application;
 
   constructor() {
     this.expressApp = express();
-    this.mounthRoutes();
+    this.mountHealth();
+    this.mountRoutes();
+    this.mountErrors();
   }
 
-  mounthRoutes(): void {
-    this.expressApp.get('/user/description', (req: Request, res: Response) => {
-      res.status(200).send('User description');
-    });
+  mountHealth() {
+    this.expressApp.use('/health', HandlerHealth);
+  }
+
+  mountRoutes(): void {
+    this.expressApp.use('/user', routerUser);
+  }
+
+  mountErrors(): void {
+    this.expressApp.use(HandlerErrors.notFound);
   }
 }
 
