@@ -21,7 +21,7 @@ type UserUpdate = {
   active: boolean;
 };
 
-type UserProperties = Required<UserRequired> & Partial<UserOptional>;
+export type UserProperties = Required<UserRequired> & Partial<UserOptional>;
 
 export default class User implements IEntity<UserProperties, UserUpdate> {
   private readonly id!: number;
