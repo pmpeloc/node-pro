@@ -1,0 +1,34 @@
+{
+  "name": "node-pro",
+  "version": "1.0.0",
+  "description": "- Presentación del curso\r - Creación Branch: diagrams\r - Presentación del Proyecto:\r   - Sistema de Ambulancias:\r     - Usuarios (Módulo específico)\r     - Pilotos\r     - Médicos\r     - Historias\r   - Autenticación (Servicio específico)\r   - Compartido (Módulo usado en común)\r - Testing:\r   - Jest (herramienta para front y back)\r   - Supertest (para back simulador de objetos)\r - Deploy:\r   - CodePipeline:\r     - CodeCommit\r     - CodeBuild\r     - CodeDeploy:\r       - Elastic Beanstalk\r - Otras opciones de Deploy:\r   - AWS: Fargate (se apaga) y EC2 (no se apaga)\r   - Beanstalk (similar al Fargate pero más barato)\r - Contenedores:\r   - Docker\r   - Podman\r - Arquitecturas Limpias:\r   - CAPAS\r   - CEBOLLA\r   - HEXAGONAL\r - Principios SOLID:\r   - Responsabilidad Única\r   - Open (Expandir) / Close (Static)\r   - Sustitución\r   - Segregación de Interfaces\r   - Inversión de Dependencias\r - Arquitectura Exagonal: arquitectura de puertos y adaptadores\r   - Basada en puertos\r   - Permite que nuestra app se conecte a servicios externos\r   - Expone una API REST\r   - API GRAPHQL\r   - Pasarela de Pagos\r   - Doble Factor de Aplicación\r   - Puedo agregar tantos servicios como lo requiera",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "start:ts": "ts-node src/index.ts",
+    "dev": "nodemon src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pmpeloc/node-pro.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pmpeloc/node-pro/issues"
+  },
+  "homepage": "https://github.com/pmpeloc/node-pro#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.14",
+    "@types/node": "^18.11.9",
+    "jest": "^29.3.1",
+    "jest-extended": "^3.1.0",
+    "nodemon": "^2.0.20",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
+  }
+}
