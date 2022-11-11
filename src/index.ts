@@ -1,7 +1,7 @@
-import App from './app';
+import Application from './app';
 import { Bootstrap, ServerBootstrap } from './bootstrap/server.bootstrap';
 
-const serverBootstrap: Bootstrap = new ServerBootstrap(App.requestListener);
+const serverBootstrap: Bootstrap = new ServerBootstrap(Application);
 
 (async () => {
   try {

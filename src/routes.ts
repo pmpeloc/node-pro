@@ -1,10 +1,7 @@
-import http from 'http';
+import { Request, Response } from 'express';
 
 interface IRoute {
-  execute: (
-    request: http.IncomingMessage,
-    response: http.ServerResponse
-  ) => void;
+  execute: (request: Request, response: Response) => void;
 }
 
 interface IRoute {
@@ -17,17 +14,13 @@ const routes: Routes = [
   {
     path: 'user/description',
     execute(request, response) {
-      response.writeHead(200, { 'content-type': 'text/plain' });
-      response.write('Server is running');
-      response.end();
+      response.status(200).send('User description');
     },
   },
   {
     path: 'user/delete',
     execute(request, response) {
-      response.writeHead(200, { 'content-type': 'text/plain' });
-      response.write('User deleted successfully');
-      response.end();
+      response.status(200).send('User delete');
     },
   },
 ];
@@ -35,12 +28,8 @@ const routes: Routes = [
 const getRoute = (path: string): IRoute | undefined =>
   routes.find((route: IRoute) => route.path === path);
 
-const exceptionNotFound = (
-  request: http.IncomingMessage,
-  response: http.ServerResponse
-) => {
-  response.writeHead(404, { 'content-type': 'text/plain' });
-  response.end('Path not found');
+const exceptionNotFound = (request: Request, response: Response) => {
+  response.status(404).send('Path not found');
 };
 
 export { getRoute, exceptionNotFound, IRoute, Routes };
