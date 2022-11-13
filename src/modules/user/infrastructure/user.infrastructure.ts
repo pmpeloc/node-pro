@@ -1,46 +1,37 @@
 import { UserRepository } from '../domain/user.repository';
-import User from '../domain/user';
+import User, { UserProperties } from '../domain/user';
+import UserFactory from '../domain/user-factory';
 
 const users: User[] = [
-  new User({
-    id: 1,
-    name: 'John',
-    lastname: 'Doe',
-    email: 'john@mail.com',
-    password: '123',
-    refreshToken: 'ABC123',
-  }),
-  new User({
-    id: 2,
-    name: 'Jane',
-    lastname: 'Doe',
-    email: 'jane@mail.com',
-    password: '123',
-    refreshToken: 'ABC123',
-  }),
+  new UserFactory().create('John', 'Doe', 'john@mail.com', '123'),
+  new UserFactory().create('Jane', 'Doe', 'jane@mail.com', '123'),
 ];
 
 export default class UserInfrastructure implements UserRepository {
-  list(): User[] {
-    return users;
+  list(): UserProperties[] {
+    return users
+      .filter((el: User) => el.properties().active)
+      .map((el: User) => el.properties());
   }
 
-  listOne(id: number): User {
-    return Object.assign(
-      {},
-      users.find((el: User) => el.properties().id === id)
+  listOne(guid: string): User | undefined {
+    const userFind = users
+      .filter((el: User) => el.properties().active)
+      .find((el: User) => el.properties().guid === guid);
+    return userFind;
+  }
+
+  insert(user: User): UserProperties {
+    users.push(user);
+    return user.properties();
+  }
+
+  update(user: User): any {
+    const { guid } = user.properties();
+    const userIndex: number = users.findIndex(
+      (el: User) => el.properties().guid === guid
     );
-  }
-
-  insert(user: User): void {
-    console.info(`User inserted: ${user}`);
-  }
-
-  update(user: User): void {
-    console.info(`User updated: ${user}`);
-  }
-
-  delete(user: User): void {
-    console.info(`User deleted: ${user}`);
+    users[userIndex] = user;
+    return user;
   }
 }

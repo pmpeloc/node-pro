@@ -1,7 +1,6 @@
 import { IEntity } from '../../shared/interfaces/entity.interface';
 
-interface UserRequired {
-  id: number;
+export interface UserRequired {
   name: string;
   lastname: string;
   email: string;
@@ -11,26 +10,33 @@ interface UserRequired {
 interface UserOptional {
   refreshToken: string;
   active: boolean;
+  guid: string;
 }
 
 type UserUpdate = {
   name: string;
   lastname: string;
+  email: string;
   password: string;
-  refreshToken: string;
-  active: boolean;
+};
+
+export type UserInsert = {
+  name: string;
+  lastname: string;
+  email: string;
+  password: string;
 };
 
 export type UserProperties = Required<UserRequired> & Partial<UserOptional>;
 
 export default class User implements IEntity<UserProperties, UserUpdate> {
-  private readonly id!: number;
   private name!: string;
   private lastname!: string;
   private readonly email!: string;
   private password!: string;
   private refreshToken!: string;
-  private active!: boolean | null;
+  private active!: boolean;
+  private readonly guid!: string | null;
 
   constructor(userProperties: UserProperties) {
     this.active = true;
@@ -39,13 +45,14 @@ export default class User implements IEntity<UserProperties, UserUpdate> {
 
   properties(): UserProperties {
     return {
-      id: this.id,
+      // id: this.id,
       name: this.name,
       lastname: this.lastname,
       email: this.email,
       password: this.password,
       refreshToken: this.refreshToken,
       active: this.active as boolean,
+      guid: this.guid as string,
     };
   }
 

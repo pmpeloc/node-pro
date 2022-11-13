@@ -10,8 +10,14 @@ class App {
   constructor() {
     this.expressApp = express();
     this.mountHealth();
+    this.mountMiddlewares();
     this.mountRoutes();
     this.mountErrors();
+  }
+
+  mountMiddlewares() {
+    this.expressApp.use(express.json());
+    this.expressApp.use(express.urlencoded({ extended: true }));
   }
 
   mountHealth() {
