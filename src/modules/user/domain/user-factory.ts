@@ -1,13 +1,22 @@
 import { v4 as uuidv4 } from 'uuid';
+
 import User, { UserProperties } from './user';
+import { EmailVO } from './value-objects/email.vo';
+import { UserPasswordService } from './services/user-password.service';
 
 export default class UserFactory {
-  create(name: string, lastname: string, email: string, password: string) {
+  async create(
+    name: string,
+    lastname: string,
+    email: EmailVO,
+    password: string
+  ) {
+    const passwordHash = await UserPasswordService.hash(password);
     const userProperties: UserProperties = {
       name,
       lastname,
       email,
-      password,
+      password: passwordHash,
       guid: uuidv4(),
       refreshToken: uuidv4(),
     };

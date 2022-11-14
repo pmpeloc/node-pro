@@ -1,8 +1,12 @@
 import { Request, Response } from 'express';
 
 import UserApplication from '../../application/user.application';
-import User, { UserInsert } from '../../domain/user';
+import User from '../../domain/user';
 import UserFactory from '../../domain/user-factory';
+import { UserListDTO, UserListMapping } from './dto/response/user-list.dto';
+import { UserListOneMapping } from './dto/response/user-list-one.dto';
+import { EmailVO } from '../../domain/value-objects/email.vo';
+import { UserInsertMapping } from './dto/response/user-insert.dto';
 
 export default class {
   constructor(private application: UserApplication) {
@@ -15,32 +19,36 @@ export default class {
 
   list(req: Request, res: Response) {
     const list = this.application.list();
-    res.json(list);
+    const result: UserListDTO = new UserListMapping().execute(list);
+    res.json(result);
   }
 
   listOne(req: Request, res: Response) {
     const { guid } = req.params;
-    const result = this.application.listOne(guid);
+    const data = this.application.listOne(guid)?.properties();
+    const result = new UserListOneMapping().execute(data!);
     res.json(result);
   }
 
-  insert(req: Request, res: Response) {
-    const { name, lastname, email, password }: UserInsert = req.body;
-    const user: User = new UserFactory().create(
+  async insert(req: Request, res: Response) {
+    const { name, lastname, email, password } = req.body;
+    const user: User = await new UserFactory().create(
       name,
       lastname,
-      email,
+      EmailVO.create(email),
       password
     );
-    const result = this.application.insert(user);
+    const data = this.application.insert(user);
+    const result = new UserInsertMapping().execute(data);
     res.json(result);
   }
+
   update(req: Request, res: Response) {
     const { guid } = req.params;
     const { name, lastname, email, password } = req.body;
     const user = this.application.listOne(guid);
     if (user) {
-      user.update({ name, lastname, email, password });
+      user.update({ name, lastname, email: EmailVO.create(email), password });
       const result = this.application.update(user);
       res.json(result);
     }
