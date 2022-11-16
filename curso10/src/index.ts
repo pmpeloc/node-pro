@@ -1,13 +1,38 @@
 import { AppDataSource } from './data-source';
-import { User } from './entity/User.entity';
+import { Car } from './entity/Car.entity';
+import { Medic } from './entity/Medic.entity';
 
 AppDataSource.initialize()
   .then(async (conn) => {
-    const userRepository = conn.getRepository(User);
+    const queryRunner = AppDataSource.manager.connection.createQueryRunner();
 
-    const users = await userRepository.find();
-    const cars = await users[1].cars;
-    console.log('Users', users);
-    console.log('Cars: ', JSON.stringify(cars, null, '\t'));
+    await queryRunner.startTransaction();
+
+    const manager = queryRunner.manager;
+
+    try {
+      await manager
+        .createQueryBuilder()
+        .from(Medic, 'medic')
+        .insert()
+        // .values({ name: 'Milagros', lastname: 'Lara' }) // Forzando el error
+        .values({ name: 'Carlos', lastname: 'Lara', age: 88 })
+        .execute();
+
+      await manager
+        .createQueryBuilder()
+        .from(Car, 'car')
+        .insert()
+        .values({ brand: 'Roto', model: 'Mustang', year: 1970, color: 'Green' })
+        .execute();
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      console.error(error);
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
   })
+
   .catch(console.error);
