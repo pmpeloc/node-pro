@@ -1,38 +1,17 @@
 import { AppDataSource } from './data-source';
-import { Car } from './entity/Car.entity';
-import { Medic } from './entity/Medic.entity';
+import { Hospital } from './entity/Hospital.entity';
 
 AppDataSource.initialize()
   .then(async (conn) => {
-    const queryRunner = AppDataSource.manager.connection.createQueryRunner();
+    const report = await AppDataSource.manager
+      .createQueryBuilder()
+      .from(Hospital, 'hospital')
+      .select(['hospital.title', 'medic.name', 'medic.lastname'])
+      .innerJoin('hospital.medics', 'medic') // Relación de registros entre Hospital y Medic
+      // .leftJoin('hospital.medics', 'medic') // Trae todo lo que esta en Hospital sin importar la relación con Medic
+      .where('char_length(medic.name) > 3')
+      .getRawMany();
 
-    await queryRunner.startTransaction();
-
-    const manager = queryRunner.manager;
-
-    try {
-      await manager
-        .createQueryBuilder()
-        .from(Medic, 'medic')
-        .insert()
-        // .values({ name: 'Milagros', lastname: 'Lara' }) // Forzando el error
-        .values({ name: 'Carlos', lastname: 'Lara', age: 88 })
-        .execute();
-
-      await manager
-        .createQueryBuilder()
-        .from(Car, 'car')
-        .insert()
-        .values({ brand: 'Roto', model: 'Mustang', year: 1970, color: 'Green' })
-        .execute();
-
-      await queryRunner.commitTransaction();
-    } catch (error) {
-      console.error(error);
-      await queryRunner.rollbackTransaction();
-    } finally {
-      await queryRunner.release();
-    }
+    console.table(report);
   })
-
   .catch(console.error);

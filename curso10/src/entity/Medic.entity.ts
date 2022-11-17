@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+
+import { Hospital } from './Hospital.entity';
 
 @Entity({ name: 'medic' })
 export class Medic {
@@ -13,4 +15,7 @@ export class Medic {
 
   @Column({ type: 'int' })
   age: number;
+
+  @ManyToOne((type) => Hospital, (hospital) => hospital.medics)
+  hospital: Hospital;
 }
