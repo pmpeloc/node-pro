@@ -1,11 +1,9 @@
-import { Application } from 'express';
 import http from 'http';
+import { Application } from 'express';
 
-export abstract class Bootstrap {
-  abstract initialize(): Promise<string>;
-}
+import { Bootstrap } from './bootstrap';
 
-export class ServerBootstrap extends Bootstrap {
+export default class ServerBootstrap extends Bootstrap {
   constructor(private readonly app: Application) {
     super();
   }
@@ -17,7 +15,6 @@ export class ServerBootstrap extends Bootstrap {
         .listen(4000)
         .on('listening', () => {
           resolve('Promise resolve successfully');
-          console.log('Server is listening in port 4000');
         })
         .on('error', (error) => {
           reject(error);

@@ -1,7 +1,9 @@
-import { UserRepository } from '../domain/user.repository';
 import User, { UserProperties } from '../domain/user';
+import { UserRepository } from '../domain/user.repository';
 import UserFactory from '../domain/user-factory';
 import { EmailVO } from '../domain/value-objects/email.vo';
+import { UserEntity } from './user.entity';
+import DatabaseBootstrap from '../../../bootstrap/database.bootstrap';
 
 let users: User[] = [];
 
@@ -36,8 +38,23 @@ export default class UserInfrastructure implements UserRepository {
     return userFind;
   }
 
-  insert(user: User): UserProperties {
-    users.push(user);
+  async insert(user: User): Promise<UserProperties> {
+    const userInsert = new UserEntity();
+    const { guid, name, lastname, email, password, refreshToken, active } =
+      user.properties();
+    Object.assign(userInsert, {
+      guid,
+      name,
+      lastname,
+      email: email.value,
+      password,
+      refreshToken,
+      active,
+    });
+    await DatabaseBootstrap.dataSource
+      .getRepository(UserEntity)
+      .save(userInsert);
+    // await this.dataSource.getRepository(UserEntity).save(userInsert);
     return user.properties();
   }
 
