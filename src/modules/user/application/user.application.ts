@@ -16,7 +16,7 @@ export default class UserApplication {
     return this.userRepository.insert(user);
   }
 
-  update(user: User): UserProperties {
+  update(user: User) {
     return this.userRepository.update(user);
   }
 }

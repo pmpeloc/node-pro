@@ -17,16 +17,18 @@ export default class {
     this.delete = this.delete.bind(this);
   }
 
-  list(req: Request, res: Response) {
-    const list = this.application.list();
-    const result: UserListDTO = new UserListMapping().execute(list);
+  async list(req: Request, res: Response) {
+    const list = await this.application.list();
+    const result: UserListDTO = new UserListMapping().execute(
+      list.map((user) => user.properties())
+    );
     res.json(result);
   }
 
-  listOne(req: Request, res: Response) {
+  async listOne(req: Request, res: Response) {
     const { guid } = req.params;
-    const data = this.application.listOne(guid)?.properties();
-    const result = new UserListOneMapping().execute(data!);
+    const user = await this.application.listOne(guid);
+    const result = new UserListOneMapping().execute(user!.properties());
     res.json(result);
   }
 
@@ -39,26 +41,23 @@ export default class {
       password
     );
     const data = await this.application.insert(user);
-    const result = new UserInsertMapping().execute(data);
+    const result = new UserInsertMapping().execute(data.properties());
     res.json(result);
   }
 
-  update(req: Request, res: Response) {
+  async update(req: Request, res: Response) {
     const { guid } = req.params;
-    const { name, lastname, email, password } = req.body;
-    const user = this.application.listOne(guid);
-    if (user) {
-      user.update({ name, lastname, email: EmailVO.create(email), password });
-      const result = this.application.update(user);
-      res.json(result);
-    }
+    const fieldsToUpdate = req.body;
+    const userToUpdate = new User({ guid, ...fieldsToUpdate });
+    const data = await this.application.update(userToUpdate);
+    res.json(data);
   }
 
   delete(req: Request, res: Response) {
-    const { guid } = req.params;
-    const user = this.application.listOne(guid);
-    user?.delete();
-    const result = this.application.update(user!);
-    res.json(result);
+    // const { guid } = req.params;
+    // const user = this.application.listOne(guid);
+    // user?.delete();
+    // const result = this.application.update(user!);
+    // res.json(result);
   }
 }

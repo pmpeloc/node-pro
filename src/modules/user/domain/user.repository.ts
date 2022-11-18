@@ -1,8 +1,8 @@
-import User, { UserProperties } from './user';
+import User from './user';
 
 export interface UserRepository {
-  list(): UserProperties[];
-  listOne(guid: string): User | undefined;
-  insert(user: User): Promise<UserProperties>;
-  update(user: User): UserProperties;
+  list(): Promise<User[]>;
+  listOne(guid: string): Promise<User | undefined>;
+  insert(user: User): Promise<User>;
+  update(user: User): Promise<User | null>;
 }

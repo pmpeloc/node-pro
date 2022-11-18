@@ -25,20 +25,38 @@ const promisesUsers = [
 Promise.all(promisesUsers).then((result) => (users = result));
 
 export default class UserInfrastructure implements UserRepository {
-  list(): UserProperties[] {
-    return users
-      .filter((el: User) => el.properties().active)
-      .map((el: User) => el.properties());
+  async list(): Promise<User[]> {
+    const repo = DatabaseBootstrap.dataSource.getRepository(UserEntity);
+    const result = await repo.find();
+    return result.map(
+      (el: UserEntity) =>
+        new User({
+          guid: el.guid,
+          name: el.name,
+          lastname: el.lastname,
+          email: EmailVO.create(el.email),
+          password: el.password,
+          refreshToken: el.refreshToken,
+          active: el.active,
+        })
+    );
   }
 
-  listOne(guid: string): User | undefined {
-    const userFind = users
-      .filter((el: User) => el.properties().active)
-      .find((el: User) => el.properties().guid === guid);
-    return userFind;
+  async listOne(guid: string): Promise<User | undefined> {
+    const repo = DatabaseBootstrap.dataSource.getRepository(UserEntity);
+    const userEntity = await repo.findOne({ where: { guid } });
+    return new User({
+      guid: userEntity!.guid,
+      name: userEntity!.name,
+      lastname: userEntity!.lastname,
+      email: EmailVO.create(userEntity!.email),
+      password: userEntity!.password,
+      refreshToken: userEntity!.refreshToken,
+      active: userEntity!.active,
+    });
   }
 
-  async insert(user: User): Promise<UserProperties> {
+  async insert(user: User): Promise<User> {
     const userInsert = new UserEntity();
     const { guid, name, lastname, email, password, refreshToken, active } =
       user.properties();
@@ -55,15 +73,26 @@ export default class UserInfrastructure implements UserRepository {
       .getRepository(UserEntity)
       .save(userInsert);
     // await this.dataSource.getRepository(UserEntity).save(userInsert);
-    return user.properties();
+    return user;
   }
 
-  update(user: User): any {
+  async update(user: User): Promise<User | null> {
     const { guid } = user.properties();
-    const userIndex: number = users.findIndex(
-      (el: User) => el.properties().guid === guid
-    );
-    users[userIndex] = user;
-    return user;
+    const repo = DatabaseBootstrap.dataSource.getRepository(UserEntity);
+    const userFound = await repo.findOne({ where: { guid } });
+    if (userFound) {
+      Object.assign(userFound, user.properties());
+      const userEntity = await repo.save(userFound);
+      return new User({
+        guid: userEntity!.guid,
+        name: userEntity!.name,
+        lastname: userEntity!.lastname,
+        email: EmailVO.create(userEntity!.email),
+        password: userEntity!.password,
+        refreshToken: userEntity!.refreshToken,
+        active: userEntity!.active,
+      });
+    }
+    return null;
   }
 }
