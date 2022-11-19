@@ -12,4 +12,4 @@ Carpeta: Production
 7. Copiar el archivo package.json desde la carpeta Deployment
 8. Ejecutar el script prod (yarn prod)
 
-#
+##
