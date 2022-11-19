@@ -1,13 +1,13 @@
 import { err, ok, Result } from 'neverthrow';
 
 import { ValueObject } from './vo.class';
-import { UserEmailInvalidException } from '../exceptions/user.exception';
+import { DriverEmailInvalidException } from '../exceptions/driver.exception';
 
 interface EmailProps {
   value: string;
 }
 
-export type EmailResult = Result<EmailVO, UserEmailInvalidException>;
+export type EmailResult = Result<EmailVO, DriverEmailInvalidException>;
 
 export class EmailVO extends ValueObject<EmailProps> {
   private constructor(props: EmailProps) {
@@ -16,7 +16,7 @@ export class EmailVO extends ValueObject<EmailProps> {
 
   static create(email: string): EmailResult {
     if (!email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/gi)) {
-      return err(new UserEmailInvalidException());
+      return err(new DriverEmailInvalidException());
     }
     return ok(new EmailVO({ value: email }));
   }

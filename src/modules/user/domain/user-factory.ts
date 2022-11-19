@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { err, ok, Result } from 'neverthrow';
 
 import User, { UserProperties } from './user';
 import { EmailVO } from './value-objects/email.vo';
@@ -10,24 +11,32 @@ import {
   UserPasswordRequiredException,
 } from './exceptions/user.exception';
 
+export type UserResult = Result<
+  User,
+  | UserNameRequiredException
+  | UserLastnameRequiredException
+  | UserPasswordRequiredException
+  | UserPasswordLengthInvalidException
+>;
+
 export default class UserFactory {
   async create(
     name: string,
     lastname: string,
     email: EmailVO,
     password: string
-  ) {
+  ): Promise<UserResult> {
     if (!name || name.trim() === '') {
-      throw new UserNameRequiredException();
+      return err(new UserNameRequiredException());
     }
     if (!lastname || lastname.trim() === '') {
-      throw new UserLastnameRequiredException();
+      return err(new UserLastnameRequiredException());
     }
     if (!password || password.trim() === '') {
-      throw new UserPasswordRequiredException();
+      return err(new UserPasswordRequiredException());
     }
     if (password.length < 4) {
-      throw new UserPasswordLengthInvalidException(password);
+      return err(new UserPasswordLengthInvalidException(password));
     }
 
     const passwordHash = await UserPasswordService.hash(password);
@@ -40,6 +49,6 @@ export default class UserFactory {
       refreshToken: uuidv4(),
     };
     const user = new User(userProperties);
-    return user;
+    return ok(user);
   }
 }
