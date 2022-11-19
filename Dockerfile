@@ -38,4 +38,6 @@ COPY --from=DEPLOYMENT /build/package.json ./package.json
 
 COPY --from=DEPLOYMENT /build/dist ./dist
 
+COPY --from=DEPLOYMENT /build/.env ./.env
+
 CMD ["npm", "run", "prod"]
