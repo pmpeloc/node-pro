@@ -1,21 +1,16 @@
 import { DataSource } from 'typeorm';
 
 import { Bootstrap } from './bootstrap';
+import { AppService, DB_CONFIG } from './app.service';
 
 let appDataSource: DataSource;
 
 export default class DatabaseBootstrap extends Bootstrap {
   initialize(): Promise<any> {
+    const dbConfig: DB_CONFIG = AppService.DbConfig;
     const AppDataSource = new DataSource({
       type: 'mysql',
-      host: 'localhost',
-      port: 3310,
-      username: 'user',
-      password: '123456',
-      database: 'curso10',
-      synchronize: true,
-      logging: false,
-      entities: ['src/**/*.entity.ts'],
+      ...dbConfig,
       migrations: [],
       subscribers: [],
     });
