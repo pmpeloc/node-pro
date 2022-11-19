@@ -3,10 +3,13 @@ import { Request, Response } from 'express';
 import UserApplication from '../../application/user.application';
 import User from '../../domain/user';
 import UserFactory from '../../domain/user-factory';
+import { EmailVO } from '../../domain/value-objects/email.vo';
 import { UserListDTO, UserListMapping } from './dto/response/user-list.dto';
 import { UserListOneMapping } from './dto/response/user-list-one.dto';
-import { EmailVO } from '../../domain/value-objects/email.vo';
 import { UserInsertMapping } from './dto/response/user-insert.dto';
+import { UserUpdateMapping } from './dto/response/user-update.dto';
+import { UserDeleteMapping } from './dto/response/user-delete.dto';
+import { GuidVO } from '../../domain/value-objects/guid.vo';
 
 export default class {
   constructor(private application: UserApplication) {
@@ -27,9 +30,19 @@ export default class {
 
   async listOne(req: Request, res: Response) {
     const { guid } = req.params;
-    const user = await this.application.listOne(guid);
-    const result = new UserListOneMapping().execute(user!.properties());
-    res.json(result);
+    const guidResult = GuidVO.create(guid);
+    if (guidResult.isErr()) {
+      return res.status(411).send(guidResult.error.message);
+    }
+    const userResult = await this.application.listOne(guid);
+    if (userResult.isErr()) {
+      return res.status(404).send(userResult.error.message);
+    } else if (userResult.isOk()) {
+      const result = new UserListOneMapping().execute(
+        userResult.value.properties()
+      );
+      return res.json(result);
+    }
   }
 
   async insert(req: Request, res: Response) {
@@ -47,17 +60,36 @@ export default class {
 
   async update(req: Request, res: Response) {
     const { guid } = req.params;
+    const guidResult = GuidVO.create(guid);
+    if (guidResult.isErr()) {
+      return res.status(411).send(guidResult.error.message);
+    }
     const fieldsToUpdate = req.body;
-    const userToUpdate = new User({ guid, ...fieldsToUpdate });
-    const data = await this.application.update(userToUpdate);
-    res.json(data);
+    const dataResult = await this.application.update(guid, fieldsToUpdate);
+    if (dataResult.isErr()) {
+      res.status(404).send(dataResult.error.message);
+    } else {
+      const result = new UserUpdateMapping().execute(
+        dataResult.value.properties()
+      );
+      res.json(result);
+    }
   }
 
-  delete(req: Request, res: Response) {
-    // const { guid } = req.params;
-    // const user = this.application.listOne(guid);
-    // user?.delete();
-    // const result = this.application.update(user!);
-    // res.json(result);
+  async delete(req: Request, res: Response) {
+    const { guid } = req.params;
+    const guidResult = GuidVO.create(guid);
+    if (guidResult.isErr()) {
+      return res.status(411).send(guidResult.error.message);
+    }
+    const dataResult = await this.application.delete(guid);
+    if (dataResult.isErr()) {
+      res.status(404).send(dataResult.error.message);
+    } else {
+      const result = new UserDeleteMapping().execute(
+        dataResult.value.properties()
+      );
+      res.json(result);
+    }
   }
 }

@@ -1,8 +1,15 @@
-import User from './user';
+import { Result } from 'neverthrow';
+
+import User, { UserUpdate } from './user';
+import { UserNotFoundException } from './exceptions/user.exception';
 
 export interface UserRepository {
   list(): Promise<User[]>;
-  listOne(guid: string): Promise<User | undefined>;
+  listOne(guid: string): Promise<Result<User, UserNotFoundException>>;
   insert(user: User): Promise<User>;
-  update(user: User): Promise<User | null>;
+  update(
+    guid: string,
+    user: Partial<UserUpdate>
+  ): Promise<Result<User, UserNotFoundException>>;
+  delete(guid: string): Promise<Result<User, UserNotFoundException>>;
 }

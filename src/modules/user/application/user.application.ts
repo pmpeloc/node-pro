@@ -1,5 +1,5 @@
 import { UserRepository } from '../domain/user.repository';
-import User, { UserProperties } from '../domain/user';
+import User, { UserUpdate } from '../domain/user';
 
 export default class UserApplication {
   constructor(private readonly userRepository: UserRepository) {}
@@ -16,7 +16,11 @@ export default class UserApplication {
     return this.userRepository.insert(user);
   }
 
-  update(user: User) {
-    return this.userRepository.update(user);
+  async update(guid: string, user: Partial<UserUpdate>) {
+    return this.userRepository.update(guid, user);
+  }
+
+  async delete(guid: string) {
+    return this.userRepository.delete(guid);
   }
 }

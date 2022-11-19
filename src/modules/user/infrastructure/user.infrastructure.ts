@@ -1,33 +1,17 @@
-import User, { UserProperties } from '../domain/user';
+import { err, ok, Result } from 'neverthrow';
+
+import User from '../domain/user';
 import { UserRepository } from '../domain/user.repository';
-import UserFactory from '../domain/user-factory';
 import { EmailVO } from '../domain/value-objects/email.vo';
 import { UserEntity } from './user.entity';
 import DatabaseBootstrap from '../../../bootstrap/database.bootstrap';
-
-let users: User[] = [];
-
-const promisesUsers = [
-  new UserFactory().create(
-    'John',
-    'Doe',
-    EmailVO.create('john@mail.com'),
-    '123'
-  ),
-  new UserFactory().create(
-    'Jane',
-    'Doe',
-    EmailVO.create('jane@mail.com'),
-    '123'
-  ),
-];
-
-Promise.all(promisesUsers).then((result) => (users = result));
+import { UserNotFoundException } from '../domain/exceptions/user.exception';
+import { UserUpdate } from '../domain/user';
 
 export default class UserInfrastructure implements UserRepository {
   async list(): Promise<User[]> {
     const repo = DatabaseBootstrap.dataSource.getRepository(UserEntity);
-    const result = await repo.find();
+    const result = await repo.find({ where: { active: true } });
     return result.map(
       (el: UserEntity) =>
         new User({
@@ -42,18 +26,24 @@ export default class UserInfrastructure implements UserRepository {
     );
   }
 
-  async listOne(guid: string): Promise<User | undefined> {
+  async listOne(guid: string): Promise<Result<User, UserNotFoundException>> {
     const repo = DatabaseBootstrap.dataSource.getRepository(UserEntity);
     const userEntity = await repo.findOne({ where: { guid } });
-    return new User({
-      guid: userEntity!.guid,
-      name: userEntity!.name,
-      lastname: userEntity!.lastname,
-      email: EmailVO.create(userEntity!.email),
-      password: userEntity!.password,
-      refreshToken: userEntity!.refreshToken,
-      active: userEntity!.active,
-    });
+    if (!userEntity) {
+      return err(new UserNotFoundException());
+    } else {
+      return ok(
+        new User({
+          guid: userEntity!.guid,
+          name: userEntity!.name,
+          lastname: userEntity!.lastname,
+          email: EmailVO.create(userEntity!.email),
+          password: userEntity!.password,
+          refreshToken: userEntity!.refreshToken,
+          active: userEntity!.active,
+        })
+      );
+    }
   }
 
   async insert(user: User): Promise<User> {
@@ -76,23 +66,50 @@ export default class UserInfrastructure implements UserRepository {
     return user;
   }
 
-  async update(user: User): Promise<User | null> {
-    const { guid } = user.properties();
+  async update(
+    guid: string,
+    user: Partial<UserUpdate>
+  ): Promise<Result<User, UserNotFoundException>> {
     const repo = DatabaseBootstrap.dataSource.getRepository(UserEntity);
-    const userFound = await repo.findOne({ where: { guid } });
+    const userFound = await repo.findOne({ where: { guid, active: true } });
     if (userFound) {
-      Object.assign(userFound, user.properties());
+      Object.assign(userFound, user);
       const userEntity = await repo.save(userFound);
-      return new User({
-        guid: userEntity!.guid,
-        name: userEntity!.name,
-        lastname: userEntity!.lastname,
-        email: EmailVO.create(userEntity!.email),
-        password: userEntity!.password,
-        refreshToken: userEntity!.refreshToken,
-        active: userEntity!.active,
-      });
+      return ok(
+        new User({
+          guid: userEntity!.guid,
+          name: userEntity!.name,
+          lastname: userEntity!.lastname,
+          email: EmailVO.create(userEntity!.email),
+          password: userEntity!.password,
+          refreshToken: userEntity!.refreshToken,
+          active: userEntity!.active,
+        })
+      );
+    } else {
+      return err(new UserNotFoundException());
     }
-    return null;
+  }
+
+  async delete(guid: string): Promise<Result<User, UserNotFoundException>> {
+    const repo = DatabaseBootstrap.dataSource.getRepository(UserEntity);
+    const userFound = await repo.findOne({ where: { guid, active: true } });
+    if (userFound) {
+      userFound.active = false;
+      const userEntity = await repo.save(userFound);
+      return ok(
+        new User({
+          guid: userEntity!.guid,
+          name: userEntity!.name,
+          lastname: userEntity!.lastname,
+          email: EmailVO.create(userEntity!.email),
+          password: userEntity!.password,
+          refreshToken: userEntity!.refreshToken,
+          active: userEntity!.active,
+        })
+      );
+    } else {
+      return err(new UserNotFoundException());
+    }
   }
 }

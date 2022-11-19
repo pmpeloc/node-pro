@@ -29,6 +29,7 @@ class App {
   }
 
   mountErrors(): void {
+    this.expressApp.use(HandlerErrors.genericError);
     this.expressApp.use(HandlerErrors.notFound);
   }
 }

@@ -8,10 +8,10 @@ interface UserDTO {
   guid: string | undefined;
 }
 
-export type UserDeleteOneDTO = UserDTO;
+export type UserUpdateOneDTO = UserDTO;
 
-export class UserDeleteMapping extends DTO<UserProperties, UserDeleteOneDTO> {
-  execute(data: UserProperties): UserDeleteOneDTO {
+export class UserUpdateMapping extends DTO<UserProperties, UserUpdateOneDTO> {
+  execute(data: UserProperties): UserUpdateOneDTO {
     return {
       name: data?.name,
       lastname: data?.lastname,
