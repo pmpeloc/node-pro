@@ -3,7 +3,7 @@ version: '3.8'
 services:
   mysql-server:
     image: mysql:8
-    container_name: mysqlserver
+    container_name: mysql_server
     environment:
       - MYSQL_ROOT_PASSWORD=123456
       - MYSQL_USER=user
@@ -16,6 +16,15 @@ services:
     volumes:
       - data-mysql-vol:/var/lib/mysql
 
+  redis-server:
+    image: redis:6.0.5-alpine
+    container_name: redis_server
+    command: redis-server --requirepass todovale
+    ports:
+      - '6379:6379'
+    restart: always
+    networks:
+      - net-curso10
 networks:
   net-curso10:
 
