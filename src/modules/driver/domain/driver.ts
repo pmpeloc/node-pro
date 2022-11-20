@@ -30,6 +30,7 @@ export default class Driver implements IEntity<DriverProperties, DriverUpdate> {
   private active!: boolean;
   private photo!: string;
   private readonly guid!: string | null;
+  private driverLicense!: string;
 
   constructor(userProperties: DriverProperties) {
     this.active = true;
@@ -44,6 +45,7 @@ export default class Driver implements IEntity<DriverProperties, DriverUpdate> {
       active: this.active as boolean,
       photo: this.photo,
       guid: this.guid as string,
+      driverLicense: this.driverLicense,
     };
   }
 

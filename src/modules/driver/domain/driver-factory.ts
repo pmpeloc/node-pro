@@ -13,11 +13,13 @@ export type DriverResult = Result<
   DriverNameRequiredException | DriverLastnameRequiredException
 >;
 
-export default class UserFactory {
+export default class DriverFactory {
   async create(
     name: string,
     lastname: string,
-    email: EmailVO
+    email: EmailVO,
+    photo: string,
+    driverLicense: string
   ): Promise<DriverResult> {
     if (!name || name.trim() === '') {
       return err(new DriverNameRequiredException());
@@ -30,6 +32,8 @@ export default class UserFactory {
       lastname,
       email,
       guid: uuidv4(),
+      photo,
+      driverLicense,
     };
     const driver = new Driver(driverProperties);
     return ok(driver);

@@ -84,6 +84,6 @@ export class DriverNotFoundException extends DomainException {
   }
 
   static getMessage() {
-    return 'User not found';
+    return 'Driver not found';
   }
 }

@@ -1,6 +1,8 @@
 import express, { Application } from 'express';
+import multer from 'multer';
 
-import routerUser from './modules/user/interfaces/http/router';
+import userRouter from './modules/user/interfaces/http/router';
+import driverRouter from './modules/driver/interfaces/http/router';
 import HandlerErrors from './helpers/errors';
 import HandlerHealth from './helpers/health';
 
@@ -9,10 +11,15 @@ class App {
 
   constructor() {
     this.expressApp = express();
+    this.init();
     this.mountHealth();
     this.mountMiddlewares();
     this.mountRoutes();
     this.mountErrors();
+  }
+
+  init() {
+    multer({ limits: { fileSize: 8000000 } });
   }
 
   mountMiddlewares() {
@@ -25,7 +32,8 @@ class App {
   }
 
   mountRoutes(): void {
-    this.expressApp.use('/user', routerUser);
+    this.expressApp.use('/user', userRouter);
+    this.expressApp.use('/driver', driverRouter);
   }
 
   mountErrors(): void {
