@@ -4,7 +4,10 @@ import Controller from './controller';
 import { DriverRepository } from '../../domain/driver.repository';
 import DriverInfrastructure from '../../infrastructure/driver.infrastructure';
 import DriverApplication from '../../application/driver.application';
-import { MiddlewareListOne } from './middlewares/driver.middleware';
+import {
+  DriverMiddleware,
+  MiddlewareListOne,
+} from './middlewares/driver.middleware';
 import { UploadBuilder } from '../../../../core/infrastructure/upload.builder';
 import {
   FactoryAWS,
@@ -34,10 +37,11 @@ class DriverRouter {
           .addFieldName('photo')
           .addMaxSize(8000000)
           .addAllowedMimeTypes(['image/jpeg', 'image/png'])
-          .addDestination('uploads')
+          .addDestination('drivers/photos')
           .addIsPublic(true)
           .build()
       ),
+      DriverMiddleware.ValidateInsert,
       controller.insert
     );
     this.expressRouter.put('/:guid', controller.update);

@@ -30,4 +30,8 @@ export class AppService {
       logging: env.DB_LOGG || false,
     };
   }
+
+  static get S3_BUCKET_NAME_PHOTOS(): string {
+    return env.S3_BUCKET_NAME_PHOTOS;
+  }
 }
