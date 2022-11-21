@@ -11,6 +11,9 @@ import {
 } from '../domain/exceptions/driver.exception';
 import { DriverUpdate } from '../domain/driver';
 import { DriverDatabaseException } from './exceptions/driver.exception';
+import { Trace } from '../../../helpers/trace';
+import { Logger } from '../../../helpers/logger';
+import { InfoLogger } from '../../../helpers/info-logger';
 
 export default class DriverInfrastructure implements DriverRepository {
   async list(): Promise<Driver[]> {
@@ -45,6 +48,15 @@ export default class DriverInfrastructure implements DriverRepository {
       if (emailResult.isErr()) {
         return err(new DriverEmailInvalidException());
       }
+      const info: InfoLogger = {
+        traceId: Trace.traceId(),
+        typeElement: 'DriverInfrastructure',
+        method: 'ListOne',
+        message: 'Listing one driver',
+        request: JSON.stringify({ guid }),
+        datetime: new Date(),
+      };
+      Logger.getLogger().info(info);
       return ok(
         new Driver({
           guid: driverEntity!.guid,

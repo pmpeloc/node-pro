@@ -14,6 +14,9 @@ import { DriverDeleteMapping } from './dto/response/driver-delete.dto';
 import { GuidVO } from '../../domain/value-objects/guid.vo';
 import { IError } from '../helpers/ierror';
 import RedisBootstrap from '../../../../bootstrap/redis.bootstrap';
+import { Trace } from '../../../../helpers/trace';
+import { InfoLogger } from '../../../../helpers/info-logger';
+import { Logger } from '../../../../helpers/logger';
 
 export default class {
   constructor(private application: DriverApplication) {
@@ -35,6 +38,15 @@ export default class {
 
   async listOne(req: Request, res: Response, next: NextFunction) {
     const { guid } = req.params;
+    const info: InfoLogger = {
+      traceId: Trace.traceId(true),
+      typeElement: 'DriverController',
+      method: 'listOne',
+      message: 'Listing one driver',
+      request: JSON.stringify({ guid }),
+      datetime: new Date(),
+    };
+    Logger.getLogger().info(JSON.stringify(info));
     const guidResult = GuidVO.create(guid);
     if (guidResult.isErr()) {
       const err: IError = new Error(guidResult.error.message);
@@ -50,8 +62,12 @@ export default class {
       const result = new DriverListOneMapping().execute(
         driverResult.value.properties()
       );
-      RedisBootstrap.set(res.locals.cacheKey, JSON.stringify(result));
-      return res.json(result);
+      const responseResult = {
+        traceId: Trace.traceId(),
+        result,
+      };
+      RedisBootstrap.set(res.locals.cacheKey, JSON.stringify(responseResult));
+      return res.json(responseResult);
     }
   }
 
