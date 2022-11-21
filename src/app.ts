@@ -5,6 +5,7 @@ import userRouter from './modules/user/interfaces/http/router';
 import driverRouter from './modules/driver/interfaces/http/router';
 import HandlerErrors from './helpers/errors';
 import HandlerHealth from './helpers/health';
+import RedisBootstrap from './bootstrap/redis.bootstrap';
 
 class App {
   readonly expressApp: Application;
@@ -15,6 +16,7 @@ class App {
     this.mountHealth();
     this.mountMiddlewares();
     this.mountRoutes();
+    this.mountInvalidationCache();
     this.mountErrors();
   }
 
@@ -34,6 +36,13 @@ class App {
   mountRoutes(): void {
     this.expressApp.use('/user', userRouter);
     this.expressApp.use('/driver', driverRouter);
+  }
+
+  mountInvalidationCache() {
+    this.expressApp.get('/invalidation-cache', (req, res) => {
+      RedisBootstrap.clear();
+      res.send('Cache invalided successfuly');
+    });
   }
 
   mountErrors(): void {

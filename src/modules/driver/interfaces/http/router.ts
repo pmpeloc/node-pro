@@ -4,15 +4,13 @@ import Controller from './controller';
 import { DriverRepository } from '../../domain/driver.repository';
 import DriverInfrastructure from '../../infrastructure/driver.infrastructure';
 import DriverApplication from '../../application/driver.application';
-import {
-  DriverMiddleware,
-  MiddlewareListOne,
-} from './middlewares/driver.middleware';
+import { DriverMiddleware } from './middlewares/driver.middleware';
 import { UploadBuilder } from '../../../../core/infrastructure/upload.builder';
 import {
   FactoryAWS,
   IUploadImage,
 } from '../../../../core/infrastructure/upload.middleware';
+import Cache from '../../../../helpers/cache';
 
 const infrastructure: DriverRepository = new DriverInfrastructure();
 const application = new DriverApplication(infrastructure);
@@ -21,6 +19,7 @@ const uploadMiddleware: IUploadImage = new FactoryAWS();
 
 class DriverRouter {
   expressRouter: Router;
+  private readonly prefix = 'DRIVERS';
 
   constructor() {
     this.expressRouter = Router();
@@ -28,8 +27,12 @@ class DriverRouter {
   }
 
   mountRoutes() {
-    this.expressRouter.get('/', controller.list);
-    this.expressRouter.get('/:guid', ...MiddlewareListOne, controller.listOne);
+    this.expressRouter.get('/', Cache.handle(this.prefix), controller.list);
+    this.expressRouter.get(
+      '/:guid',
+      Cache.handle(this.prefix),
+      controller.listOne
+    );
     this.expressRouter.post(
       '/',
       uploadMiddleware.save(

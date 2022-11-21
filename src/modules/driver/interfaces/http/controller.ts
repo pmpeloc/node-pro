@@ -13,6 +13,7 @@ import { DriverUpdateMapping } from './dto/response/driver-update.dto';
 import { DriverDeleteMapping } from './dto/response/driver-delete.dto';
 import { GuidVO } from '../../domain/value-objects/guid.vo';
 import { IError } from '../helpers/ierror';
+import RedisBootstrap from '../../../../bootstrap/redis.bootstrap';
 
 export default class {
   constructor(private application: DriverApplication) {
@@ -28,6 +29,7 @@ export default class {
     const result: DriverListDTO = new DriverListMapping().execute(
       list.map((driver) => driver.properties())
     );
+    RedisBootstrap.set(res.locals.cacheKey, JSON.stringify(result));
     res.json(result);
   }
 
@@ -48,6 +50,7 @@ export default class {
       const result = new DriverListOneMapping().execute(
         driverResult.value.properties()
       );
+      RedisBootstrap.set(res.locals.cacheKey, JSON.stringify(result));
       return res.json(result);
     }
   }
@@ -81,6 +84,7 @@ export default class {
       const result = new DriverInsertMapping().execute(
         dataResult.value.properties()
       );
+      RedisBootstrap.clear('DRIVERS');
       res.json(result);
     }
   }
