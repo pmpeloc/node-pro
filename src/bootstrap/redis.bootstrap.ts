@@ -1,6 +1,6 @@
 import IORedis from 'ioredis';
 
-import { REDIS_CONFIG, AppService } from './app.service';
+import { IRedisConfig, AppService } from './app.service';
 import { Bootstrap } from './bootstrap';
 
 let appRedis: IORedis;
@@ -8,7 +8,7 @@ let appRedis: IORedis;
 export default class RedisBootstrap extends Bootstrap {
   initialize(): Promise<any> {
     return new Promise((resolve, reject) => {
-      const redisConfig: REDIS_CONFIG = AppService.RedisConfig;
+      const redisConfig: IRedisConfig = AppService.RedisConfig;
       const client = new IORedis(redisConfig);
       client
         .on('connect', () => {
@@ -28,7 +28,7 @@ export default class RedisBootstrap extends Bootstrap {
   }
 
   static async get(key: string) {
-    return await appRedis.get(key);
+    return appRedis.get(key);
   }
 
   static async set(key: string, value: string) {
