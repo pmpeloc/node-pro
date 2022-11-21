@@ -25,6 +25,16 @@ services:
     restart: always
     networks:
       - net-curso10
+
+  sonarqube-server:
+    image: sonarqube:8-community
+    container_name: sonarqube_server
+    ports:
+      - '9000:9000'
+      - '9002:9002'
+    restart: always
+    networks:
+      - net-curso10
 networks:
   net-curso10:
 
