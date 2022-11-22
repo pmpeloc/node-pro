@@ -1,4 +1,5 @@
 import { Auth } from './auth';
+import { Role } from '../../role/domain/role';
 
 export type UserType = {
   name: string;
@@ -7,6 +8,7 @@ export type UserType = {
   email: string;
   refreshToken: string;
   guid: string;
+  roles: string[] | number[] | Role[];
 };
 
 export interface AuthRepository {

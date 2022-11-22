@@ -17,7 +17,8 @@ export class Authentication {
         return next(error);
       }
       AuthService.validateAccessToken(token)
-        .then((payload) => {
+        .then((payload: any) => {
+          res.locals.roles = payload.roles;
           return next();
         })
         .catch((err) => {

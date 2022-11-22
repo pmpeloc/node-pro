@@ -8,6 +8,7 @@ export class AuthInfrastructure implements AuthRepository {
     const repo = DatabaseBootstrap.dataSource.getRepository(UserEntity);
     const result = await repo.findOne({
       where: { email: auth.properties().email },
+      relations: ['roles'],
     });
     if (!result) {
       return null;
@@ -20,6 +21,7 @@ export class AuthInfrastructure implements AuthRepository {
       password,
       refreshToken: result.refreshToken,
       guid: result.guid,
+      roles: result.roles.map((rol) => rol.name),
     };
   }
 
@@ -27,6 +29,7 @@ export class AuthInfrastructure implements AuthRepository {
     const repo = DatabaseBootstrap.dataSource.getRepository(UserEntity);
     const result = await repo.findOne({
       where: { refreshToken },
+      relations: ['roles'],
     });
     if (!result) {
       return null;
@@ -39,6 +42,7 @@ export class AuthInfrastructure implements AuthRepository {
       password,
       refreshToken: result.refreshToken,
       guid: result.guid,
+      roles: result.roles.map((role) => role.name),
     };
   }
 }

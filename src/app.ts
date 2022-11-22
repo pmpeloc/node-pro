@@ -8,6 +8,7 @@ import HandlerErrors from './helpers/errors';
 import HandlerHealth from './helpers/health';
 import RedisBootstrap from './bootstrap/redis.bootstrap';
 import { Authentication } from './middlewares/authentication.middleware';
+import { Authorization } from './middlewares/authorization.middleware';
 
 class App {
   readonly expressApp: Application;
@@ -36,7 +37,12 @@ class App {
   }
 
   mountRoutes(): void {
-    this.expressApp.use('/user', Authentication.canActivate, userRouter);
+    this.expressApp.use(
+      '/user',
+      Authentication.canActivate,
+      Authorization.canActive('ADMINISTRATOR', 'SUPER'),
+      userRouter
+    );
     this.expressApp.use('/driver', driverRouter);
     this.expressApp.use('/auth', authRouter);
   }

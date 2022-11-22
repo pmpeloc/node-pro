@@ -50,7 +50,7 @@ export default class {
   }
 
   async insert(req: Request, res: Response, next: NextFunction) {
-    const { name, lastname, email, password } = req.body;
+    const { name, lastname, email, password, roles } = req.body;
     const emailResult: EmailResult = EmailVO.create(email);
     if (emailResult.isErr()) {
       const err: IError = new Error(emailResult.error.message);
@@ -61,7 +61,8 @@ export default class {
       name,
       lastname,
       emailResult.value,
-      password
+      password,
+      roles
     );
     if (userResult.isErr()) {
       const err: IError = new Error(userResult.error.message);

@@ -9,6 +9,7 @@ const env = yenv('.env');
 interface IPayload {
   name: string;
   lastname: string;
+  roles: string[];
   iat: number;
   exp: number;
 }
@@ -32,10 +33,11 @@ export enum TOKEN_ERROR_MESSAGE {
 
 export class AuthService {
   static generateAccessToken(user: UserType): string {
-    const { name, lastname } = user;
+    const { name, lastname, roles } = user;
     const payload: IPayload = {
       name,
       lastname,
+      roles: roles as string[],
       iat: moment().unix(),
       exp: moment().add(10, 'minutes').unix(),
     };

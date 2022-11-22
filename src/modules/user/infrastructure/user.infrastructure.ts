@@ -10,11 +10,16 @@ import {
   UserEmailInvalidException,
 } from '../domain/exceptions/user.exception';
 import { UserUpdate } from '../domain/user';
+import { RoleEntity } from '../../role/infrastructure/role.entity';
+import { In } from 'typeorm';
 
 export default class UserInfrastructure implements UserRepository {
   async list(): Promise<User[]> {
     const repo = DatabaseBootstrap.dataSource.getRepository(UserEntity);
-    const result = await repo.find({ where: { active: true } });
+    const result = await repo.find({
+      where: { active: true },
+      relations: ['roles'],
+    });
     return result.map((el: UserEntity) => {
       const emailResult: EmailResult = EmailVO.create(el.email);
       if (emailResult.isErr()) {
@@ -28,13 +33,17 @@ export default class UserInfrastructure implements UserRepository {
         password: el.password,
         refreshToken: el.refreshToken,
         active: el.active,
+        roles: el.roles,
       });
     });
   }
 
   async listOne(guid: string): Promise<Result<User, UserNotFoundException>> {
     const repo = DatabaseBootstrap.dataSource.getRepository(UserEntity);
-    const userEntity = await repo.findOne({ where: { guid } });
+    const userEntity = await repo.findOne({
+      where: { guid },
+      relations: ['roles'],
+    });
     if (!userEntity) {
       return err(new UserNotFoundException());
     } else {
@@ -51,6 +60,7 @@ export default class UserInfrastructure implements UserRepository {
           password: userEntity!.password,
           refreshToken: userEntity!.refreshToken,
           active: userEntity!.active,
+          roles: userEntity!.roles,
         })
       );
     }
@@ -58,8 +68,19 @@ export default class UserInfrastructure implements UserRepository {
 
   async insert(user: User): Promise<User> {
     const userInsert = new UserEntity();
-    const { guid, name, lastname, email, password, refreshToken, active } =
-      user.properties();
+    const {
+      guid,
+      name,
+      lastname,
+      email,
+      password,
+      refreshToken,
+      active,
+      roles,
+    } = user.properties();
+    const rolesUser = await DatabaseBootstrap.dataSource
+      .getRepository(RoleEntity)
+      .findBy({ roleId: In(roles as number[]) });
     Object.assign(userInsert, {
       guid,
       name,
@@ -68,11 +89,11 @@ export default class UserInfrastructure implements UserRepository {
       password,
       refreshToken,
       active,
+      roles: rolesUser,
     });
     await DatabaseBootstrap.dataSource
       .getRepository(UserEntity)
       .save(userInsert);
-    // await this.dataSource.getRepository(UserEntity).save(userInsert);
     return user;
   }
 
@@ -98,6 +119,7 @@ export default class UserInfrastructure implements UserRepository {
           password: userEntity!.password,
           refreshToken: userEntity!.refreshToken,
           active: userEntity!.active,
+          roles: userEntity!.roles,
         })
       );
     } else {
@@ -124,6 +146,7 @@ export default class UserInfrastructure implements UserRepository {
           password: userEntity!.password,
           refreshToken: userEntity!.refreshToken,
           active: userEntity!.active,
+          roles: userEntity!.roles,
         })
       );
     } else {

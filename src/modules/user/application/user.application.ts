@@ -13,8 +13,6 @@ export default class UserApplication {
   }
 
   async insert(user: User) {
-    // const {password} = user.properties();
-    // user.update({password: await UserService.hashPassword(password)})
     return this.userRepository.insert(user);
   }
 

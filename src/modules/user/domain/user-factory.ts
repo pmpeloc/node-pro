@@ -24,7 +24,8 @@ export default class UserFactory {
     name: string,
     lastname: string,
     email: EmailVO,
-    password: string
+    password: string,
+    roles: number[] | string[]
   ): Promise<UserResult> {
     if (!name || name.trim() === '') {
       return err(new UserNameRequiredException());
@@ -47,6 +48,7 @@ export default class UserFactory {
       password: passwordHash,
       guid: uuidv4(),
       refreshToken: uuidv4(),
+      roles,
     };
     const user = new User(userProperties);
     return ok(user);
