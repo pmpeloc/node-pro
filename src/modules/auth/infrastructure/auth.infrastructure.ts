@@ -19,6 +19,26 @@ export class AuthInfrastructure implements AuthRepository {
       email,
       password,
       refreshToken: result.refreshToken,
+      guid: result.guid,
+    };
+  }
+
+  async getUserByRefreshToken(refreshToken: string): Promise<UserType | null> {
+    const repo = DatabaseBootstrap.dataSource.getRepository(UserEntity);
+    const result = await repo.findOne({
+      where: { refreshToken },
+    });
+    if (!result) {
+      return null;
+    }
+    const { name, lastname, email, password } = result;
+    return {
+      name,
+      lastname,
+      email,
+      password,
+      refreshToken: result.refreshToken,
+      guid: result.guid,
     };
   }
 }

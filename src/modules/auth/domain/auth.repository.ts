@@ -6,8 +6,10 @@ export type UserType = {
   password: string;
   email: string;
   refreshToken: string;
+  guid: string;
 };
 
 export interface AuthRepository {
   getUser(auth: Auth): Promise<UserType | null>;
+  getUserByRefreshToken(refreshToken: string): Promise<UserType | null>;
 }

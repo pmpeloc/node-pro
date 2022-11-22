@@ -19,6 +19,7 @@ export type UserUpdate = {
   lastname: string;
   email: EmailVO;
   password: string;
+  refreshToken: string;
 };
 
 export type UserProperties = Required<UserRequired> & Partial<UserOptional>;
