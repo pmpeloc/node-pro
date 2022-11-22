@@ -3,6 +3,7 @@ import multer from 'multer';
 
 import userRouter from './modules/user/interfaces/http/router';
 import driverRouter from './modules/driver/interfaces/http/router';
+import authRouter from './modules/auth/interfaces/http/router';
 import HandlerErrors from './helpers/errors';
 import HandlerHealth from './helpers/health';
 import RedisBootstrap from './bootstrap/redis.bootstrap';
@@ -36,6 +37,7 @@ class App {
   mountRoutes(): void {
     this.expressApp.use('/user', userRouter);
     this.expressApp.use('/driver', driverRouter);
+    this.expressApp.use('/auth', authRouter);
   }
 
   mountInvalidationCache() {

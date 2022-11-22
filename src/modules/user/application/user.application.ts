@@ -12,7 +12,9 @@ export default class UserApplication {
     return this.userRepository.listOne(guid);
   }
 
-  insert(user: User) {
+  async insert(user: User) {
+    // const {password} = user.properties();
+    // user.update({password: await UserService.hashPassword(password)})
     return this.userRepository.insert(user);
   }
 
