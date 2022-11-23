@@ -23,6 +23,10 @@ export default class RedisBootstrap extends Bootstrap {
     });
   }
 
+  close() {
+    appRedis.disconnect();
+  }
+
   getConnection() {
     return appRedis;
   }

@@ -2,6 +2,7 @@ node_modules/
 cache
 curso10
 dist
+reports
 
 .env
 .scannerwork

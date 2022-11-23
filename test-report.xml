@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="D:\NODE\node-pro\test\index.spec.ts">
+    <testCase name=" should pass" duration="4"/>
+  </file>
+  <file path="D:\NODE\node-pro\test\unit\user.controller.spec.ts">
+    <testCase name="user.controller List users" duration="5"/>
+    <testCase name="user.controller List one" duration="3"/>
+  </file>
+  <file path="D:\NODE\node-pro\test\integration\user.route.spec.ts">
+    <testCase name="User routes List users without token" duration="61"/>
+    <testCase name="User routes List users with valid token" duration="35"/>
+    <testCase name="User routes List users with expired token" duration="14"/>
+    <testCase name="User routes List users with invalid token" duration="7"/>
+  </file>
+</testExecutions>

@@ -39,7 +39,9 @@ export class AuthService {
       lastname,
       roles: roles as string[],
       iat: moment().unix(),
-      exp: moment().add(10, 'minutes').unix(),
+      exp: moment()
+        .add(365 * 24, 'hours')
+        .unix(),
     };
     return jwt.encode(payload, env.KEYWORD_SECRET || 'secret');
   }

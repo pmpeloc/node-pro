@@ -21,4 +21,8 @@ export default class DatabaseBootstrap extends Bootstrap {
   static get dataSource(): DataSource {
     return appDataSource;
   }
+
+  close() {
+    appDataSource.destroy();
+  }
 }

@@ -24,4 +24,8 @@ export default class ServerBootstrap extends Bootstrap {
         });
     });
   }
+
+  close() {
+    process.exit(0);
+  }
 }
