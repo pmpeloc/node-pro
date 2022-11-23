@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  mysql-server:
+    image: mysql:8
+    container_name: mysql_server
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=123456
+      - MYSQL_DATABASE=curso10
+    ports:
+      - '3310:3306'
+    networks:
+      - net-curso10
+    volumes:
+      - data-mysql-vol:/var/lib/mysql
+
+  redis-server:
+    image: redis:6.0.5-alpine
+    container_name: redis_server
+    command: redis-server --requirepass todovale
+    ports:
+      - '6379:6379'
+    restart: always
+    networks:
+      - net-curso10
+
+  sonarqube-server:
+    image: sonarqube:8-community
+    container_name: sonarqube_server
+    ports:
+      - '9000:9000'
+      - '9002:9002'
+    restart: always
+    networks:
+      - net-curso10
+
+  logstash-server:
+    image: logstash:7.8.1
+    container_name: logstash_server
+    volumes:
+      - ./elk_config/logging.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./elk_config/logstash.yml:/usr/share/logstash/config/logstash.yml
+    ports:
+      - 1514:1514/udp
+      - 1515:1515
+      - 1515:1515/udp
+    networks:
+      - net-curso10
+
+  elasticsearch-server:
+    image: elasticsearch:7.8.0
+    container_name: elasticsearch_server
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      - ./elk_config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - data-elasticsearch-vol:/usr/share/elasticsearch/data
+    environment:
+      - discovery.type=single-node
+    networks:
+      - net-curso10
+
+  kibana-server:
+    image: docker.elastic.co/kibana/kibana:7.8.0
+    container_name: kibana_server
+    volumes:
+      - ./elk_config/kibana.yml:/usr/share/kibana/config/kibana.yml
+    ports:
+      - 5601:5601
+    networks:
+      - net-curso10
+
+networks:
+  net-curso10:
+
+
+volumes:
+  data-mysql-vol:
+  data-elasticsearch-vol:
+
+
