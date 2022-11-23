@@ -3,7 +3,7 @@ import json
 
 class UserBehaviour_UserA(TaskSet):
   def on_start(self):
-    response = self.client.post('/auth/login', {email: 'john@mail.com', password: '12345'})
+    response = self.client.post('/auth/login', {"email": 'john@mail.com', "password": '12345'})
     self.token = response.json()['accessToken']
 
   @task(10)
@@ -16,7 +16,7 @@ class UserBehaviour_UserA(TaskSet):
 
 class UserBehaviour_UserB(TaskSet):
   def on_start(self):
-    response = self.client.post('/auth/login', {email: 'john@mail.com', password: '12345'})
+    response = self.client.post('/auth/login', {"email": 'john@mail.com', "password": '12345'})
     self.token = response.json()['accessToken']
 
   @task(3)

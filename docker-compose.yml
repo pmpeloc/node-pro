@@ -26,50 +26,69 @@ services:
     networks:
       - net-curso10
 
-  sonarqube-server:
-    image: sonarqube:8-community
-    container_name: sonarqube_server
+  # sonarqube-server:
+  #   image: sonarqube:8-community
+  #   container_name: sonarqube_server
+  #   ports:
+  #     - '9000:9000'
+  #     - '9002:9002'
+  #   restart: always
+  #   networks:
+  #     - net-curso10
+
+  # logstash-server:
+  #   image: logstash:7.8.1
+  #   container_name: logstash_server
+  #   volumes:
+  #     - ./elk_config/logging.conf:/usr/share/logstash/pipeline/logstash.conf
+  #     - ./elk_config/logstash.yml:/usr/share/logstash/config/logstash.yml
+  #   ports:
+  #     - 1514:1514/udp
+  #     - 1515:1515
+  #     - 1515:1515/udp
+  #   networks:
+  #     - net-curso10
+
+  # elasticsearch-server:
+  #   image: elasticsearch:7.8.0
+  #   container_name: elasticsearch_server
+  #   ports:
+  #     - 9200:9200
+  #     - 9300:9300
+  #   volumes:
+  #     - ./elk_config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+  #     - data-elasticsearch-vol:/usr/share/elasticsearch/data
+  #   environment:
+  #     - discovery.type=single-node
+  #   networks:
+  #     - net-curso10
+
+  # kibana-server:
+  #   image: docker.elastic.co/kibana/kibana:7.8.0
+  #   container_name: kibana_server
+  #   volumes:
+  #     - ./elk_config/kibana.yml:/usr/share/kibana/config/kibana.yml
+  #   ports:
+  #     - 5601:5601
+  #   networks:
+  #     - net-curso10
+
+  locust-master:
+    build:
+      context: .
+      dockerfile: locust/Dockerfile
+    container_name: locust_master
     ports:
-      - '9000:9000'
-      - '9002:9002'
-    restart: always
+      - 8089:8089
+    command: '--host=http://e593-2803-cf00-bfd-6000-3d87-6d5d-7d15-5493.ngrok.io --master'
     networks:
       - net-curso10
 
-  logstash-server:
-    image: logstash:7.8.1
-    container_name: logstash_server
-    volumes:
-      - ./elk_config/logging.conf:/usr/share/logstash/pipeline/logstash.conf
-      - ./elk_config/logstash.yml:/usr/share/logstash/config/logstash.yml
-    ports:
-      - 1514:1514/udp
-      - 1515:1515
-      - 1515:1515/udp
-    networks:
-      - net-curso10
-
-  elasticsearch-server:
-    image: elasticsearch:7.8.0
-    container_name: elasticsearch_server
-    ports:
-      - 9200:9200
-      - 9300:9300
-    volumes:
-      - ./elk_config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - data-elasticsearch-vol:/usr/share/elasticsearch/data
-    environment:
-      - discovery.type=single-node
-    networks:
-      - net-curso10
-
-  kibana-server:
-    image: docker.elastic.co/kibana/kibana:7.8.0
-    container_name: kibana_server
-    volumes:
-      - ./elk_config/kibana.yml:/usr/share/kibana/config/kibana.yml
-    ports:
-      - 5601:5601
+  locust-slave:
+    build:
+      context: .
+      dockerfile: locust/Dockerfile
+    command: '--host=http://e593-2803-cf00-bfd-6000-3d87-6d5d-7d15-5493.ngrok.io --master-host=locust-master --slave'
     networks:
       - net-curso10
 
@@ -80,5 +99,3 @@ networks:
 volumes:
   data-mysql-vol:
   data-elasticsearch-vol:
-
-
